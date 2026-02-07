@@ -343,7 +343,11 @@ def translate_test(lang=""):
         raise RuntimeError("Failed compiling the mu.po file.")
 
     local_env = dict(os.environ)
-    local_env["LANG"] = _translate_lang(lang)
+    locale_value = _translate_lang(lang)
+    local_env["LANG"] = locale_value
+    # Some Qt/GLib setups require these to respect the requested locale.
+    local_env["LC_ALL"] = locale_value
+    local_env["LANGUAGE"] = locale_value
     return subprocess.run(
         [sys.executable, "-m", "mu"], env=local_env
     ).returncode
